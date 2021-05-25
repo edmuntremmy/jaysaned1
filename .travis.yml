@@ -1,0 +1,24 @@
+language:
+  - cpp
+
+before_install:
+  - pip install --user cpp-coveralls
+
+addons:
+  sonarcloud:
+    organization: "edmuntremmy"
+    token: $SONAR_TOKEN
+      
+
+script:
+  - qmake
+  - make
+  - ./test/tests
+
+after_success:
+  - coveralls --root . -E ".*external.*" -E ".*test.*"
+  - build-wrapper-linux-x86-64 --out-dir bw-output make clean all
+  - sonar-scanner -Dsonar.cfamily.build-wrapper-output=bw-output
+
+notifications:
+  email: false
